@@ -1,9 +1,16 @@
 {% extends "layout.html" %}
 
-{% block content%}
-{% for course in courses %}
+{% block title %}Courses{{block.super}}{% endblock %}
 
-<h2>{{ course.title }}</h2>
-{{ course.description }}
-{% endfor %}
+{% block content%}
+<div class="cards">
+	{% for course in courses %}
+	<div class="card">
+		<header><a href="{% url 'courses:detail' pk=course.pk %}">{{ course.title }}</a></header>
+		<div class="card-copy">
+			{{ course.description }}
+		</div>	
+	</div>	
+	{% endfor %}
+</div>	
 {% endblock %}
