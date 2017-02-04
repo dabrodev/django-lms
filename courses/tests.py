@@ -1,7 +1,8 @@
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
 
-from .models import Course
+from .models import Course, Step
 
 # Create your tests here.
 
@@ -14,3 +15,41 @@ class CourseModelTests(TestCase):
 			)
 		now = timezone.now()
 		self.assertLess(course.created_at, now)
+
+class StepModelTests(TestCase):
+	def setUp(self):
+		self.course = Course.objects.create(
+			title="Python Testing",
+			description="Learn to write tests in Python."
+			)
+
+	def test_step_creation(self):
+		'''Tests for the Step model'''
+		step = Step.objects.create(
+			title="Introduction to Doctests",
+			description="Learn to write tests in your docstrings.",
+			course=self.course
+			)
+		self.assertIn(step, self.course.step_set.all())
+
+class CourseViewsTest(TestCase):
+	'''Tests for the Course views and urls'''
+	def setUp(self):
+		self.course = Course.objects.create(
+			title="Python Testing",
+			description="Learn to write tests"
+			)
+		self.course2 = Course.objects.create(
+			title="New Course",
+			description="New Course description"
+			)
+		self.step = Step.objects.create(
+			title="Introduction to Doctests",
+			description="Learn to write tests in your docstrings",
+			course=self.course
+			)
+	def test_course_list_view(self):
+		resp = self.client.get(reverse('courses:list'))
+		self.assertEqual(resp.status_code, 200)
+		self.assertIn(self.course, resp.context['courses'])
+		self.assertIn(self.course, resp.context['courses'])
